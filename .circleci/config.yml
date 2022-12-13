@@ -69,8 +69,6 @@ workflows:
                 registry: << pipeline.parameters.registry >>
                 image: lab-basic-bot
                 tag: dev.${CIRCLE_SHA1:0:7}
-          requires:
-            - static-code-analysis
           filters: *on-push-main
 
   # development-deploy-wip:
