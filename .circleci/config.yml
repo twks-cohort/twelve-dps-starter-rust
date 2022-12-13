@@ -1,0 +1,129 @@
+---
+version: 2.1
+
+orbs:
+  python: twdps/python-api@0.1.0
+  cosign: twdps/cosign@0.1.0
+  kube: twdps/kube-ops@0.3.0
+
+# ==== global pipeline parameters
+
+parameters:
+  context:
+    description: circleci context for all jobs
+    type: string
+    default: twdps-core-labs-team
+  shell-options:
+    description: shell options for all jobs
+    type: string
+    default: op run --env-file op.env -- /bin/bash -eo pipefail
+  package-manager:
+    description: python package manager
+    type: string
+    default: pipenv
+  registry:
+    description: publish to this registry
+    type: string
+    default: ghcr.io/thoughtworks-dps
+  executor-image:
+    description: image to use for local jobs
+    type: string
+    default: twdps/circleci-kube-ops:alpine-0.7.0
+
+on-push-main: &on-push-main
+  branches:
+    only: /main/
+  tags:
+    ignore: /.*/
+
+on-tag-main: &on-tag-main
+  branches:
+    ignore: /.*/
+  tags:
+    only: /.*/
+
+workflows:
+  version: 2
+
+  development-build:
+    jobs:
+      - python/static-analysis:
+          name: static-code-analysis
+          context: << pipeline.parameters.context >>
+          package-manager: << pipeline.parameters.package-manager >>
+          lint-path: api
+          report-coverage: codeclimate
+          cis-docker-image-scan: true
+          executor-image: twdps/circleci-python-builder:0.2.0
+          install-dev: true
+          after-checkout:
+            - run:
+                name: copy over local environment
+                command: cp local/local.env .env
+          filters: *on-push-main
+
+      - python/secure-image-build:
+          name: secure-build
+          context: << pipeline.parameters.context >>
+          shell: /bin/bash
+          python-version: "3.9.10"
+          before-build:
+            - run:
+                name: inject environment variables
+                command: |
+                  op inject -i op.env -o $BASH_ENV
+                  source $BASH_ENV
+                  op inject -i cosign.key.env -o cosign.key
+                  op inject -i cosign.pub.env -o cosign.pub
+          registry: << pipeline.parameters.registry >>
+          image: lab-basic-bot
+          image-cve-scan: true
+          skip-base-image: true
+          snyk-organization: twdps
+          # health-url: "http://0.0.0.0:8000/v1/teams/healthz"
+          port-definition: "8000:8000"
+          after-push:
+            - cosign/install
+            - cosign/sign:
+                registry: << pipeline.parameters.registry >>
+                image: lab-basic-bot
+                tag: dev.${CIRCLE_SHA1:0:7}
+          requires:
+            - static-code-analysis
+          filters: *on-push-main
+  # development-deploy-wip:
+  #   jobs:
+  #     - deploy:
+  #         context: << pipeline.parameters.context >>
+  #         name: Deploy to Dev Namespace
+  #         cluster: prod-us-east-1
+  #         environment: 
+
+jobs:
+  deploy:
+    docker:
+      - image: << pipeline.parameters.executor-image >>
+    parameters:
+      cluster:
+        description: target kubernetes cluster
+        type: string
+      environment:
+        description: values environment to use
+        type: string
+    steps:
+      - run:
+          name: pull kubeconfig
+          command: |
+            mkdir -p ~/.kube
+            ENV=<< parameters.cluster >> op inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+      - run:
+          name: Deploy via Helm
+          command: |
+            helm upgrade
+            --install
+            --namespace twdps-core-labs-team-<< parameters.environment >>
+            --values deployment/values-<< parameters.environment >>.yaml
+            --cleanup-on-fail
+            --atomic
+            basic-bot 
+            ./chart

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basic-bot
+  labels:
+    app: basic-bot 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basic-bot 
+  template:
+    metadata:
+      labels:
+        app: basic-bot 
+    spec:
+      containers:
+      - name: basic-bot
+        image: ghcr.io/ThoughtWorks-DPS/basic-bot:TO_BE_REPLACED
+        env:
+        - name: DISCORD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: discord-token
+              key: DISCORD_TOKEN

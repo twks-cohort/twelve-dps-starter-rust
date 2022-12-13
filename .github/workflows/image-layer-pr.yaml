@@ -1,0 +1,36 @@
+name: Image layer updates
+on:
+  push:
+    branches: ['golden-image-*']
+
+jobs:
+  pull-request:
+    name: open pr to main
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      name: checkout
+    
+    - name: get branch name
+      shell: bash
+      run: echo "::set-output name=BRANCH_NAME::$(echo ${GITHUB_REF#refs/heads/})"
+      id: extract_branch_name
+    
+    - name: create pr
+      id: create-pr
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        signoff: false
+        branch: ${{github.ref}}
+        base: ${{ github.event.repository.default_branch }}
+        title: '[${{ steps.extract_branch_name.outputs.BRANCH_NAME }}] Update'
+        body: |
+          Image ${{ steps.extract_branch_name.outputs.BRANCH_NAME }}
+          - Update with newest image layer
+          - PR created by [img updater bot][1]
+          
+          [1]: https://github.com/olivercodes/img-updater-bot
+        labels: |
+          image-layer
+        draft: false
