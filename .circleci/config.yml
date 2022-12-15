@@ -59,6 +59,7 @@ workflows:
           registry: << pipeline.parameters.registry >>
           image: lab-basic-bot
           image-cve-scan: true
+          executor-image: twdps/circleci-rust-builder:0.2.0
           skip-base-image: true
           snyk-organization: twdps
           # health-url: "http://0.0.0.0:8000/v1/teams/healthz"
