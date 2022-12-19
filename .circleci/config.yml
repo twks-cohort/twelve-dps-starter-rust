@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  rust: twdps/rust-api@2.2.0
+  rust: twdps/rust-api@2.3.0
   cosign: twdps/cosign@0.1.0
   kube: twdps/kube-ops@0.3.0
 
