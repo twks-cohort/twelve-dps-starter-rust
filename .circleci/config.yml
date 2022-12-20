@@ -6,7 +6,7 @@ orbs:
   cosign: twdps/cosign@0.1.0
   kube: twdps/kube-ops@0.3.0
 
-# ==== global pipeline parameters
+# ==== global pipeline parameters 
 
 parameters:
   context:
