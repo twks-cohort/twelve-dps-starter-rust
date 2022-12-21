@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  rust: twdps/rust-api@2.9.0
+  rust: twdps/rust-api@2.10.0
   cosign: twdps/cosign@0.1.0
   kube: twdps/kube-ops@0.3.0
 
@@ -47,7 +47,6 @@ workflows:
           name: secure-build
           context: << pipeline.parameters.context >>
           shell: /bin/bash
-          rust-version: "1.62.0"
           before-build:
             - run:
                 name: inject environment variables
