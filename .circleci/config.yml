@@ -57,7 +57,7 @@ workflows:
                   op inject -i cosign.pub.env -o cosign.pub
           registry: << pipeline.parameters.registry >>
           image: lab-basic-bot
-          image-cve-scan: true
+          image-cve-scan: false
           skip-base-image: true
           snyk-organization: twdps
           # health-url: "http://0.0.0.0:8000/v1/teams/healthz"
