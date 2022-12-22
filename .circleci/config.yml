@@ -70,13 +70,13 @@ workflows:
                 tag: dev.${CIRCLE_SHA1:0:7}
           filters: *on-push-main
 
-  # development-deploy-wip:
-  #   jobs:
-  #     - deploy:
-  #         context: << pipeline.parameters.context >>
-  #         name: Deploy to Dev Namespace
-  #         cluster: prod-us-east-1
-  #         environment: 
+  development-deploy-wip:
+    jobs:
+      - deploy:
+          context: << pipeline.parameters.context >>
+          name: Deploy to Dev Namespace
+          cluster: prod-us-east-1
+          environment: dev
 
 jobs:
   deploy:
