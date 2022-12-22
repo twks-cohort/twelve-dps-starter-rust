@@ -94,7 +94,7 @@ jobs:
           name: pull kubeconfig
           command: |
             mkdir -p ~/.kube
-            ENV=<< parameters.cluster >> op inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+            ENV=<< parameters.cluster >> op inject -i ./tpl/kubeconfig.tpl -o ~/.kube/config
       - run:
           name: Deploy via Helm
           command: |
