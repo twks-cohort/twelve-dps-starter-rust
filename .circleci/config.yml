@@ -6,6 +6,9 @@ orbs:
   cosign: twdps/cosign@0.1.0
   kube: twdps/kube-ops@0.3.0
 
+defaults: &defaults
+  working_directory: ~/repo
+
 # ==== global pipeline parameters 
 
 parameters:
