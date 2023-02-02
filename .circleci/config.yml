@@ -99,11 +99,11 @@ jobs:
       - run:
           name: Deploy via Helm
           command: |
-            helm upgrade
-            --install
-            --namespace twdps-core-labs-team-<< parameters.environment >>
-            --values deployment/values-<< parameters.environment >>.yaml
-            --cleanup-on-fail
-            --atomic
-            basic-bot 
+            helm upgrade \
+            --install \
+            --namespace twdps-core-labs-team-<< parameters.environment >> \
+            --values deployment/values-<< parameters.environment >>.yaml \
+            --cleanup-on-fail \
+            --atomic \
+            basic-bot \
             ./chart
