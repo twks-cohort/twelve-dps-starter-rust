@@ -1,100 +1,47 @@
-use std::convert::Infallible;
-use std::net::SocketAddr;
+#![deny(warnings)]
 
+use futures::stream::{ TryStreamExt};
 use hyper::service::{make_service_fn, service_fn};
-use hyper::header::{HeaderValue, CONTENT_LENGTH};
 use hyper::{Body, Method, Request, Response, Server, StatusCode};
 
-use structopt::StructOpt;
+async fn echo(req: Request<Body>) -> Result<Response<Body>, hyper::Error> {
+    match (req.method(), req.uri().path()) {
+        // Serve some instructions at /
+        (&Method::GET, "/") => Ok(Response::new(Body::from(
+            "Try POSTing data to /echo such as: `curl localhost:3000/echo -XPOST -d 'hello world'`",
+        ))),
 
-#[derive(PartialEq, Debug)]
-struct ParseError {}
+        // Simply echo the body back to the client.
+        (&Method::POST, "/echo") => Ok(Response::new(req.into_body())),
 
-/// Find acronym meaning.
-#[derive(Debug, StructOpt)]
-#[structopt(name = "args", about = "Provide echo server configuration")]
-struct Cli {
-    /// The acronym to search for
-    #[structopt(short, long)]
-    port: Option<u16>,
+        // Simply echo back to the client
+        (&Method::GET, "/echo") => Ok(Response::new(req.into_body())),
 
-    /// Context to search in
-    #[structopt(short, long)]
-    body: Option<String>,
+        // Convert to uppercase before sending back to client using a stream.
+        (&Method::POST, "/echo/uppercase") => {
+            let chunk_stream = req.into_body().map_ok(|chunk| {
+                chunk
+                    .iter()
+                    .map(|byte| byte.to_ascii_uppercase())
+                    .collect::<Vec<u8>>()
+            });
+            Ok(Response::new(Body::wrap_stream(chunk_stream)))
+        }
+
+        _ => {
+            let mut not_found = Response::default();
+            *not_found.status_mut() = StatusCode::NOT_FOUND;
+            Ok(not_found)
+        }
+    }
 }
 
 #[tokio::main]
-async fn main() {
-    let args = Cli::from_args();
-    let port = args.port.unwrap_or(8080);
-    let address = SocketAddr::from(([0, 0, 0, 0], port));
-    let server = Server::bind(&address).serve(make_service_fn(|_server| async {
-        Ok::<_, Infallible>(service_fn(handle_request))
-    }));
-
-    // Allow server to be killed.
-    let server = server.with_graceful_shutdown(async {
-        tokio::signal::ctrl_c()
-            .await
-            .expect("Failed to add signal handler")
-    });
-
-    println!("Echo server listening on port {}", port);
-    if let Err(e) = server.await {
-        eprintln!("Server error: {}", e);
-    }
-}
-
-async fn handle_request(req: Request<Body>) -> Result<Response<Body>, Infallible> {
-    let mut response = Response::new(Body::empty());
-    let echo_headers = response.headers_mut();
-    let headers = req.headers();
-
-    // Echo HTTP headers
-    headers.iter().for_each(|(name, value)| {
-        echo_headers.insert(name, value.clone());
-    });
-
-    // Handle each HTTP verb
-    match (req.method(), req.uri().path()) {
-        (&Method::GET, "/") => {
-            let args = Cli::from_args();
-            let body = args.body.unwrap_or_else(|| String::from(""));
-            let content_length = HeaderValue::from_str(
-                &body.as_bytes().len().to_string()
-            ).unwrap_or_else(|_| HeaderValue::from_static("0"));
-
-            echo_headers.insert(CONTENT_LENGTH, content_length);
-            *response.body_mut() = Body::from(body);
-        }
-        (&Method::POST, "/") => {
-            *response.body_mut() = req.into_body();
-        }
-        (&Method::PUT, "/") => {
-            *response.body_mut() = req.into_body();
-        }
-        (&Method::PATCH, "/") => {
-            *response.body_mut() = req.into_body();
-        }
-        (&Method::OPTIONS, "/") => {
-            *response.status_mut() = StatusCode::OK;
-        }
-        _ => {
-            *response.status_mut() = StatusCode::NOT_FOUND;
-        }
-    };
-
-    Ok(response)
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-
-    #[test]
-    fn test_get_body() {
-        let resp = tokio_test::block_on(handle_request(Request::new(Body::from("hello world"))));
-
-        assert_eq!(resp.unwrap().status(), StatusCode::OK);
-    }
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    let addr = ([0, 0, 0, 0], 8000).into();
+    let service = make_service_fn(|_| async { Ok::<_, hyper::Error>(service_fn(echo)) });
+    let server = Server::bind(&addr).serve(service);
+    println!("Listening on http://{}", addr);
+    server.await?;
+    Ok(())
 }

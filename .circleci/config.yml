@@ -5,6 +5,8 @@ orbs:
   rust: twdps/rust-api@2.11.0
   cosign: twdps/cosign@0.1.0
   kube: twdps/kube-ops@0.3.0
+  op: twdps/onepassword@1.0.0
+
 
 # ==== global pipeline parameters 
 
@@ -26,6 +28,8 @@ parameters:
     type: string
     default: twdps/circleci-kube-ops:alpine-0.7.0
 
+# ==== triggers 
+
 on-push-main: &on-push-main
   branches:
     only: /main/
@@ -37,6 +41,32 @@ on-tag-main: &on-tag-main
     ignore: /.*/
   tags:
     only: /.*/
+
+commands:
+  set-environment:
+    description: generate environment credentials and configuration from templates
+    parameters:
+      cluster:
+        description: cluster environment
+        type: string
+      source-env:
+        description: .env file to source into BASH_ENV
+        type: string
+    steps:
+      - op/env:
+          env-file: << parameters.source-env >>
+  set-kubeconfig:
+    parameters:
+      cluster:
+        description: cluster to configure
+        type: string
+    steps:
+      - run:
+          name: setup kubeconfig
+          command: |
+            mkdir -p ~/.kube
+            ENV=<< parameters.cluster >> op inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+
 
 workflows:
   version: 2
@@ -60,7 +90,6 @@ workflows:
           image-cve-scan: false
           skip-base-image: true
           snyk-organization: twdps
-          # health-url: "http://0.0.0.0:8000/v1/teams/healthz"
           port-definition: "8000:8000"
           after-push:
             - cosign/install
@@ -74,28 +103,38 @@ workflows:
     jobs:
       - deploy:
           context: << pipeline.parameters.context >>
+          shell:  op run --env-file op.nonprod.env -- /bin/bash -eo pipefail
           name: Deploy to Dev Namespace
           cluster: prod-us-east-1
           environment: dev
+          source-env: op.nonprod.env
 
 jobs:
   deploy:
     docker:
       - image: << pipeline.parameters.executor-image >>
+    shell: << parameters.shell >>
     parameters:
+      shell:
+        description: shell option directive
+        type: string
+        default: /bin/bash -eo pipefail
       cluster:
         description: target kubernetes cluster
         type: string
       environment:
         description: values environment to use
         type: string
+      source-env:
+        description: .env file to source into BASH_ENV
+        type: string
     steps:
       - checkout
-      - run:
-          name: pull kubeconfig
-          command: |
-            mkdir -p ~/.kube
-            ENV=<< parameters.cluster >> op inject -i tpl/kubeconfig.tpl -o ~/.kube/config
+      - set-environment:
+          cluster: << parameters.cluster >>
+          source-env: << parameters.source-env >>
+      - set-kubeconfig:
+          cluster: << parameters.cluster >>
       - run:
           name: Deploy via Helm
           command: |

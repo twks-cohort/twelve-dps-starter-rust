@@ -26,7 +26,4 @@ RUN chown -R $USER:$USER /server
 
 USER $USER
 
-# Expose default port of echo-server
-EXPOSE 8080
-
-ENTRYPOINT ["/server/echo-server"]
+CMD ["/server/echo-server", "--port", "8000"]

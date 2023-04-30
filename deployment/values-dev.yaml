@@ -4,4 +4,4 @@ hosts:
 gateways:
   - istio-system/dev-twdps-io-gateway
 image:
-  tag: dev.bb2a51c
+  tag: dev.f55bd15
