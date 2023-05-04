@@ -2,6 +2,6 @@
 hosts:
   - basic-bot-dev.prod-us-east-1.twdps.io 
 gateways:
-  - istio-system/prod-twdps-io-gateway
+  - istio-system/prod-us-east-1-twdps-io-gateway
 image:
   tag: dev.51565ac
