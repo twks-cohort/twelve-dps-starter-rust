@@ -1,6 +1,6 @@
 ---
 hosts:
-  - basic-bot.sandbox-us-east-2.twdps.io 
+  - basic-bot-dev.prod-us-east-1.twdps.io 
 gateways:
   - istio-system/dev-twdps-io-gateway
 image:
