@@ -2,14 +2,14 @@
 apiVersion: autoscaling/v2beta1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "lab-basic-bot.fullname" . }}
+  name: {{ include "twelve-lab-basic-bot.fullname" . }}
   labels:
-    {{- include "lab-basic-bot.labels" . | nindent 4 }}
+    {{- include "twelve-lab-basic-bot.labels" . | nindent 4 }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "lab-basic-bot.fullname" . }}
+    name: {{ include "twelve-lab-basic-bot.fullname" . }}
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:

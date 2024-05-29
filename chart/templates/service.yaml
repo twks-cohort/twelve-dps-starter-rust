@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "lab-basic-bot.fullname" . }}
+  name: {{ include "twelve-lab-basic-bot.fullname" . }}
   labels:
-    {{- include "lab-basic-bot.labels" . | nindent 4 }}
+    {{- include "twelve-lab-basic-bot.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
@@ -12,12 +12,12 @@ spec:
       protocol: TCP
       name: http
   selector:
-    {{- include "lab-basic-bot.selectorLabels" . | nindent 4 }}
+    {{- include "twelve-lab-basic-bot.selectorLabels" . | nindent 4 }}
 ---
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: {{ include "lab-basic-bot.fullname" . }}
+  name: {{ include "twelve-lab-basic-bot.fullname" . }}
 spec:
   {{- with .Values.hosts }}
   hosts:
@@ -34,4 +34,4 @@ spec:
             prefix: "/v1/echo"
       route:
         - destination:
-            host: {{ include "lab-basic-bot.fullname" . }}
+            host: {{ include "twelve-lab-basic-bot.fullname" . }}

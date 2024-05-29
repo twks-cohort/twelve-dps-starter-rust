@@ -22,7 +22,7 @@ parameters:
   registry:
     description: publish to this registry
     type: string
-    default: ghcr.io/thoughtworks-dps
+    default: ghcr.io/twks-cohort
   executor-image:
     description: image to use for local jobs
     type: string
@@ -86,7 +86,7 @@ workflows:
                   op inject -i cosign.key.env -o cosign.key
                   op inject -i cosign.pub.env -o cosign.pub
           registry: << pipeline.parameters.registry >>
-          image: lab-basic-bot
+          image: twelve-lab-basic-bot
           image-cve-scan: false
           skip-base-image: true
           snyk-organization: twdps
@@ -95,7 +95,7 @@ workflows:
             - cosign/install
             - cosign/sign:
                 registry: << pipeline.parameters.registry >>
-                image: lab-basic-bot
+                image: twelve-lab-basic-bot
                 tag: dev.${CIRCLE_SHA1:0:7}
           filters: *on-push-main
 
