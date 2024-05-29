@@ -1,1 +1,1 @@
-{{ op://empc-lab/platform-$ENV/kubeconfig }}
+{{ op://cohorts/twelve-platform-sandbox-ap-southeast-2/kubeconfig }}
