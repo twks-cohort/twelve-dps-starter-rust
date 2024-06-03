@@ -1,0 +1,7 @@
+---
+hosts:
+  - basic-bot-dev.prod-ap-southeast-2.twdps.io
+gateways:
+  - istio-system/prod-ap-southeast-2-twdps-io-gateway
+image:
+  tag: dev.51565ac
