@@ -1,7 +1,7 @@
 ---
 hosts:
-  - basic-bot-dev.prod-ap-southeast-2.twdps.io
+  - basic-bot-dev.sandbox-ap-southeast-2.cdicohorts-twelve.com
 gateways:
-  - istio-system/prod-ap-southeast-2-twdps-io-gateway
+  - istio-system/sandbox-ap-southeast-2-cdicohorts-twelve-com-gateway
 image:
   tag: dev.51565ac
