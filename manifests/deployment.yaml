@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: basic-bot
-        image: ghcr.io/ThoughtWorks-DPS/basic-bot:TO_BE_REPLACED
+        image: ghcr.io/twks-cohort/twelve-lab-basic-bot:TO_BE_REPLACED
         env:
         - name: DISCORD_TOKEN
           valueFrom:
