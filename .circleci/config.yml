@@ -138,6 +138,7 @@ jobs:
           command: |
             helm upgrade \
             --install \
+            --create-namespace \
             --namespace twdps-core-labs-team-<< parameters.environment >> \
             --values deployment/values-<< parameters.environment >>.yaml \
             --cleanup-on-fail \
