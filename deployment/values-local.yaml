@@ -2,4 +2,4 @@ hosts:
   - "*"
 gateways:
   - istio-system/local-gateway
-jwt_issuer: https://twdpsio.us.auth0.com/
+jwt_issuer: https://dev-8zg3kpi25tnc00ds.us.auth0.com
