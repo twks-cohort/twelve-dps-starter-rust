@@ -25,7 +25,7 @@ parameters:
   executor-image:
     description: image to use for local jobs
     type: string
-    default: twdps/circleci-kube-ops:alpine-0.7.0
+    default: twdps/circleci-kube-ops:alpine-edge
 
 # ==== triggers
 
