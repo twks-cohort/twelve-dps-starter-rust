@@ -7,8 +7,7 @@ orbs:
   kube: twdps/kube-ops@0.3.0
   op: twdps/onepassword@1.0.0
 
-
-# ==== global pipeline parameters 
+# ==== global pipeline parameters
 
 parameters:
   context:
@@ -28,7 +27,7 @@ parameters:
     type: string
     default: twdps/circleci-kube-ops:alpine-0.7.0
 
-# ==== triggers 
+# ==== triggers
 
 on-push-main: &on-push-main
   branches:
@@ -67,7 +66,6 @@ commands:
             mkdir -p ~/.kube
             ENV=<< parameters.cluster >> op inject -i tpl/kubeconfig.tpl -o ~/.kube/config
 
-
 workflows:
   version: 2
 
@@ -103,10 +101,10 @@ workflows:
     jobs:
       - deploy:
           context: << pipeline.parameters.context >>
-          shell:  op run --env-file op.nonprod.env -- /bin/bash -eo pipefail
+          shell: op run --env-file op.nonprod.env -- /bin/bash -eo pipefail
           name: Deploy to Dev Namespace
-          cluster: prod-us-east-1
-          environment: dev
+          cluster: sandbox-ap-southeast-2
+          environment: sandbox
           source-env: op.nonprod.env
 
 jobs:
