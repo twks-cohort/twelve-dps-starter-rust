@@ -1,1 +1,1 @@
-{{ op://cohorts/twelve-platform-sandbox-ap-southeast-2/kubeconfig }}
+{{ op://cohorts/twelve-platform-$ENV/kubeconfig }}
