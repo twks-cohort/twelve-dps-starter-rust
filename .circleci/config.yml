@@ -104,9 +104,9 @@ workflows:
       - deploy:
           context: << pipeline.parameters.context >>
           shell: op run --env-file op.nonprod.env -- /bin/bash -eo pipefail
-          name: Deploy to Dev Namespace
+          name: Deploy to Sandbox Namespace
           cluster: sandbox-ap-southeast-2
-          environment: dev
+          environment: sandbox
           source-env: op.nonprod.env
 
 jobs:

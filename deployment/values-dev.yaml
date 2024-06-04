@@ -4,4 +4,4 @@ hosts:
 gateways:
   - istio-system/nonprod-ap-southeast-2-cdicohorts-twelve-com-gateway
 image:
-  tag: dev.6933ef4
+  tag: dev.322049e
