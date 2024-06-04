@@ -29,9 +29,6 @@ spec:
   {{- end }}
   http:
     - name: "root"
-      match:
-        - uri:
-            prefix: "/echo"
       route:
         - destination:
             host: {{ include "twelve-lab-basic-bot.fullname" . }}
