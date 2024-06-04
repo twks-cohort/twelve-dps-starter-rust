@@ -4,4 +4,4 @@ hosts:
 gateways:
   - istio-system/sandbox-ap-southeast-2-cdicohorts-twelve-com-gateway
 image:
-  tag: dev.51565ac
+  tag: dev.1a53cc7
