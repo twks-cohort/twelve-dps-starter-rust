@@ -31,7 +31,7 @@ spec:
     - name: "root"
       match:
         - uri:
-            prefix: "/v1/echo"
+            prefix: "/echo"
       route:
         - destination:
             host: {{ include "twelve-lab-basic-bot.fullname" . }}
