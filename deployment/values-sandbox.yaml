@@ -1,7 +1,0 @@
----
-hosts:
-  - basic-bot-dev.sandbox-ap-southeast-2.cdicohorts-twelve.com
-gateways:
-  - istio-system/sandbox-ap-southeast-2-cdicohorts-twelve-com-gateway
-image:
-  tag: dev.1a53cc7
