@@ -106,7 +106,7 @@ workflows:
           shell: op run --env-file op.nonprod.env -- /bin/bash -eo pipefail
           name: Deploy to Sandbox Namespace
           cluster: sandbox-ap-southeast-2
-          environment: sandbox
+          environment: dev
           source-env: op.nonprod.env
 
 jobs:
